@@ -16,7 +16,8 @@ struct myqueue
 
 vector<Cell> g[100][100] ;
 int row,col;
-int dis[100][100], par[100][100] ;
+int dis[100][100];
+myqueue par[100][100] ;
 
 myqueue pop()
 {
@@ -38,7 +39,7 @@ myqueue pop()
     Q[x_index][y_index].flag = false ;
     return Q[x_index][y_index];
 }
-//
+
 bool isEmpty(){
     for(int i = 0 ; i < row ; i++){
         for(int j = 0 ; j < col ; j++){
@@ -48,29 +49,25 @@ bool isEmpty(){
     }
     return true ;
 }
-/*
+
 void Dijkstra(){
     while(!isEmpty()){
         myqueue u = pop();
         for(int i = 0 ; i < g[u.cell_x][u.cell_y].size() ; i++){
+            Cell t = g[u.cell_x][u.cell_y][i];
+            myqueue v = Q[t.x][t.y];
+            int w = t.cost;
 
-        }
-        int u = pop() ;
-       // printf("u : %d\n", u) ;
-        for(int i = 0 ; i < g[u].size() ; i++){
-            node t = g[u][i] ;
-            int v = t.nd ;
-            int w = t.weight ;
-          //  printf("v : %d w: %d\n", v, w) ;
-            if(dis[v] > dis[u] + w){
-                dis[v] = dis[u] + w ;
-                par[v] = u ;
-                Q[v].key = dis[v] ;
+            if(dis[v.cell_x][v.cell_y] > dis[u.cell_x][u.cell_y] + w){
+                dis[v.cell_x][v.cell_y] = dis[u.cell_x][u.cell_y] + w;
+                par[v.cell_x][v.cell_y] = u;
+                Q[v.cell_x][v.cell_y].key = dis[v.cell_x][v.cell_y];
             }
         }
     }
 }
-*/
+
+
 int main()
 {
     int cost_matrix[6][6] = {
@@ -91,7 +88,7 @@ int main()
         {
 
             //add up neighbor
-            if(i-1>=0){
+            if(i-1>=0  && cost_matrix[i-1][j] != -1){
                 tempV.x = i-1;
                 tempV.y = j;
                 tempV.cost = cost_matrix[i-1][j];
@@ -104,7 +101,7 @@ int main()
             }
 
             //add down neighbor
-            if(i+1<row){
+            if(i+1<row && cost_matrix[i+1][j] !=- 1){
                 tempV.x = i+1;
                 tempV.y = j;
                 tempV.cost = cost_matrix[i+1][j];
@@ -116,7 +113,7 @@ int main()
                 g[i+1][j].push_back(tempU);
             }
             //add left neighbor
-            if(j-1>=0){
+            if(j-1>=0 && cost_matrix[i][j-1] != -1){
                 tempV.x = i;
                 tempV.y = j-1;
                 tempV.cost = cost_matrix[i][j-1];
@@ -128,7 +125,7 @@ int main()
                 g[i][j-1].push_back(tempU);
             }
             //add right neighbor
-            if(j+1<col){
+            if(j+1<col && cost_matrix[i][j+1] != -1 ){
                 tempV.x = i;
                 tempV.y = j+1;
                 tempV.cost = cost_matrix[i][j+1];
@@ -145,7 +142,7 @@ int main()
     for(int i = 0 ; i < row ; i++){
         for(int j = 0 ; j < col ; j++){
             dis[i][j] = 99999 ;
-            par[i][j] = -1 ;
+            //par[i][j] = NULL ;
         }
     }
 
@@ -164,8 +161,8 @@ int main()
         }
     }
 
-    //
-    //Dijkstra() ;
+
+    Dijkstra() ;
     for(int i = 0 ; i < row ; i++){
         for(int j = 0 ; j < col ; j++){
             printf("%d      ", dis[i][j]) ;
