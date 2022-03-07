@@ -88,7 +88,7 @@ int main()
         {
 
             //add up neighbor
-            if(i-1>=0  && cost_matrix[i-1][j] != -1){
+            if(i-1>=0  && cost_matrix[i-1][j] >= 0){
                 tempV.x = i-1;
                 tempV.y = j;
                 tempV.cost = cost_matrix[i-1][j];
@@ -101,7 +101,7 @@ int main()
             }
 
             //add down neighbor
-            if(i+1<row && cost_matrix[i+1][j] !=- 1){
+            if(i+1<row && cost_matrix[i+1][j] >= 0){
                 tempV.x = i+1;
                 tempV.y = j;
                 tempV.cost = cost_matrix[i+1][j];
@@ -113,7 +113,7 @@ int main()
                 g[i+1][j].push_back(tempU);
             }
             //add left neighbor
-            if(j-1>=0 && cost_matrix[i][j-1] != -1){
+            if(j-1>=0 && cost_matrix[i][j-1] >= 0){
                 tempV.x = i;
                 tempV.y = j-1;
                 tempV.cost = cost_matrix[i][j-1];
@@ -125,7 +125,7 @@ int main()
                 g[i][j-1].push_back(tempU);
             }
             //add right neighbor
-            if(j+1<col && cost_matrix[i][j+1] != -1 ){
+            if(j+1<col && cost_matrix[i][j+1] >= 0 ){
                 tempV.x = i;
                 tempV.y = j+1;
                 tempV.cost = cost_matrix[i][j+1];
@@ -141,7 +141,12 @@ int main()
 
     for(int i = 0 ; i < row ; i++){
         for(int j = 0 ; j < col ; j++){
-            dis[i][j] = 99999 ;
+            if(cost_matrix[i][j] != -1){
+                dis[i][j] = 99999 ;
+            }else{
+                dis[i][j] = -1;
+            }
+
             //par[i][j] = NULL ;
         }
     }
@@ -154,15 +159,18 @@ int main()
 
     for(int i = 0 ; i < row ; i++){
         for(int j = 0 ; j < col ; j++){
-            Q[i][j].cell_x = i;
-            Q[i][j].cell_y = j;
-            Q[i][j].key = dis[i][j];
-            Q[i][j].flag = true;
+            if(cost_matrix[i][j] != -1){
+                Q[i][j].cell_x = i;
+                Q[i][j].cell_y = j;
+                Q[i][j].key = dis[i][j];
+                Q[i][j].flag = true;
+            }
         }
     }
 
 
     Dijkstra() ;
+    printf("Printing minimum cost to reach all cells from source \n");
     for(int i = 0 ; i < row ; i++){
         for(int j = 0 ; j < col ; j++){
             printf("%d      ", dis[i][j]) ;
