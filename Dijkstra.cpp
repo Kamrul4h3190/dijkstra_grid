@@ -67,7 +67,17 @@ void Dijkstra(){
     }
 }
 
+void printPath(int start_x,int start_y,myqueue q)
+{
+    int curr_x = q.cell_x;
+    int curr_y = q.cell_y;
+    printf("%d,%d   ", curr_x,curr_y) ;
+    if(curr_x == start_x && curr_y == start_y){
+        return;
+    }
+    printPath(start_x,start_y,par[curr_x][curr_y]);
 
+}
 int main()
 {
     int cost_matrix[6][6] = {
@@ -152,10 +162,10 @@ int main()
     }
 
 
-    int startX,stratY;
+    int startX,startY;
     printf("Enter starting location startX,startY  : ");
-    scanf("%d %d", &startX, &stratY);
-    dis[startX][stratY] = 0 ;
+    scanf("%d %d", &startX, &startY);
+    dis[startX][startY] = 0 ;
 
     for(int i = 0 ; i < row ; i++){
         for(int j = 0 ; j < col ; j++){
@@ -177,6 +187,12 @@ int main()
         }
         printf("\n");
     }
+
+
+    int endX,endY;
+    printf("Enter ending location endX,endY  : ");
+    scanf("%d %d", &endX, &endY);
+    printPath(startX,startY,Q[endX][endY]);
 
     return 0 ;
 }
