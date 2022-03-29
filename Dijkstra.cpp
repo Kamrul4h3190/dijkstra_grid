@@ -1,15 +1,18 @@
 #include<stdio.h>
 #include<vector>
+#include<math.h>
 
 using namespace std ;
 struct Cell
 {
     int x,y, cost ;
+    double heuristic, total;
 }tempU,tempV;
 
 struct myqueue
 {
-    int cell_x,cell_y, key ;
+    int cell_x,cell_y;
+    double key ;
     bool flag ;
 }Q[100][100];
 
@@ -17,11 +20,12 @@ struct myqueue
 vector<Cell> g[100][100] ;
 int row,col;
 int dis[100][100];
+double heu[100][100],tot[100][100];
 myqueue par[100][100] ;
 
 myqueue pop()
 {
-    int min = 1000000 ;
+    double min = 1000000.0 ;
     int x_index ;
     int y_index ;
 
@@ -62,6 +66,24 @@ void Dijkstra(){
                 dis[v.cell_x][v.cell_y] = dis[u.cell_x][u.cell_y] + w;
                 par[v.cell_x][v.cell_y] = u;
                 Q[v.cell_x][v.cell_y].key = dis[v.cell_x][v.cell_y];
+            }
+        }
+    }
+}
+
+void AStar(){
+    while(!isEmpty()){
+        myqueue u = pop();
+        for(int i = 0 ; i < g[u.cell_x][u.cell_y].size() ; i++){
+            Cell t = g[u.cell_x][u.cell_y][i];
+            myqueue v = Q[t.x][t.y];
+            int w = t.cost;
+
+            if(dis[v.cell_x][v.cell_y] > dis[u.cell_x][u.cell_y] + w){
+                dis[v.cell_x][v.cell_y] = dis[u.cell_x][u.cell_y] + w;
+                tot[v.cell_x][v.cell_y] = dis[v.cell_x][v.cell_y] + heu[v.cell_x][v.cell_y];
+                par[v.cell_x][v.cell_y] = u;
+                Q[v.cell_x][v.cell_y].key = tot[v.cell_x][v.cell_y];
             }
         }
     }
@@ -167,6 +189,10 @@ int main()
     scanf("%d %d", &startX, &startY);
     dis[startX][startY] = 0 ;
 
+    int endX,endY;
+    printf("Enter ending location endX,endY  : ");
+    scanf("%d %d", &endX, &endY);
+
     for(int i = 0 ; i < row ; i++){
         for(int j = 0 ; j < col ; j++){
             if(cost_matrix[i][j] != -1){
@@ -180,18 +206,63 @@ int main()
 
 
     Dijkstra() ;
-    printf("Printing minimum cost to reach all cells from source \n");
+    printf("\nAll minimum cost G(x,y)\n");
     for(int i = 0 ; i < row ; i++){
         for(int j = 0 ; j < col ; j++){
             printf("%d      ", dis[i][j]) ;
         }
         printf("\n");
     }
+    printPath(startX,startY,Q[endX][endY]);
 
 
-    int endX,endY;
-    printf("Enter ending location endX,endY  : ");
-    scanf("%d %d", &endX, &endY);
+    //Calculating all heuristic costs
+    for(int i = 0 ; i < row ; i++){
+        for(int j = 0 ; j < col ; j++){
+            if(cost_matrix[i][j] != -1){
+                heu[i][j] = sqrt( pow(1.00*(endX-i),2) + pow(1.00*(endY-j),2) );
+            }else{
+                heu[i][j] = -1.0;
+            }
+        }
+    }
+
+    //printing all heuristic costs
+    printf("\nAll heuristic H(x,y)\n") ;
+    for(int i = 0 ; i < row ; i++){
+        for(int j = 0 ; j < col ; j++){
+            printf("%0.3f      ", heu[i][j]) ;
+        }
+        printf("\n");
+    }
+
+
+    //finding total cost F(x,y)
+    for(int i = 0 ; i < row ; i++){
+        for(int j = 0 ; j < col ; j++){
+            tot[i][j] = dis[i][j] + heu[i][j];
+        }
+    }
+    printf("\nAll total F(x,y)\n") ;
+    for(int i = 0 ; i < row ; i++){
+        for(int j = 0 ; j < col ; j++){
+            printf("%0.3f      ", tot[i][j]) ;
+        }
+        printf("\n");
+    }
+
+
+    for(int i = 0 ; i < row ; i++){
+        for(int j = 0 ; j < col ; j++){
+            if(cost_matrix[i][j] != -1){
+                Q[i][j].key = tot[i][j];
+                Q[i][j].flag = true;
+            }
+        }
+    }
+
+    AStar() ;
+
     printPath(startX,startY,Q[endX][endY]);
 
     return 0 ;
